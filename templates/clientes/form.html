@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ action }} Cliente - Taller Automotriz{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-person-plus"></i> {{ action }} Cliente</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Tipo de cliente -->
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Cliente</label>
+                        <select name="tipo" class="form-select" required onchange="toggleFields()">
+                            <option value="PARTICULAR">Particular</option>
+                            <option value="EMPRESARIAL">Empresarial</option>
+                        </select>
+                    </div>
+
+                    <!-- Campos para particular -->
+                    <div id="campos-particular" class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" name="nombre" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Apellido</label>
+                            <input type="text" name="apellido" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <!-- Campos para empresarial -->
+                    <div id="campos-empresarial" class="row mb-3" style="display: none;">
+                        <div class="col-md-8">
+                            <label class="form-label">Razón Social</label>
+                            <input type="text" name="razon_social" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">RUC</label>
+                            <input type="text" name="ruc" class="form-control">
+                        </div>
+                    </div>
+
+                    <div id="contacto-empresarial" class="mb-3" style="display: none;">
+                        <label class="form-label">Contacto Principal</label>
+                        <input type="text" name="contacto_principal" class="form-control">
+                    </div>
+
+                    <!-- Información de contacto -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Teléfono</label>
+                            <input type="text" name="telefono" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label class="form-label">Dirección</label>
+                            <textarea name="direccion" class="form-control" rows="2" required></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Ciudad</label>
+                            <input type="text" name="ciudad" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Observaciones</label>
+                        <textarea name="observaciones" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'clientes:list' %}" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">{{ action }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleFields() {
+    const tipo = document.querySelector('select[name="tipo"]').value;
+    const particular = document.getElementById('campos-particular');
+    const empresarial = document.getElementById('campos-empresarial');
+    const contacto = document.getElementById('contacto-empresarial');
+    
+    if (tipo === 'PARTICULAR') {
+        particular.style.display = 'block';
+        empresarial.style.display = 'none';
+        contacto.style.display = 'none';
+        
+        // Hacer campos requeridos
+        document.querySelector('input[name="nombre"]').required = true;
+        document.querySelector('input[name="apellido"]').required = true;
+        document.querySelector('input[name="razon_social"]').required = false;
+        document.querySelector('input[name="ruc"]').required = false;
+    } else {
+        particular.style.display = 'none';
+        empresarial.style.display = 'block';
+        contacto.style.display = 'block';
+        
+        // Hacer campos requeridos
+        document.querySelector('input[name="nombre"]').required = false;
+        document.querySelector('input[name="apellido"]').required = false;
+        document.querySelector('input[name="razon_social"]').required = true;
+        document.querySelector('input[name="ruc"]').required = true;
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Clientes - Taller Automotriz{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-people"></i> Gestión de Clientes</h2>
+    <a href="{% url 'clientes:create' %}" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> Nuevo Cliente
+    </a>
+</div>
+
+<!-- Búsqueda -->
+<div class="row mb-3">
+    <div class="col-md-6">
+        <form method="get" class="d-flex">
+            <input type="text" name="search" class="form-control" 
+                   placeholder="Buscar clientes..." value="{{ search }}">
+            <button type="submit" class="btn btn-outline-secondary ms-2">
+                <i class="bi bi-search"></i>
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Tabla de clientes -->
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Nombre/Razón Social</th>
+                        <th>Email</th>
+                        <th>Teléfono</th>
+                        <th>Ciudad</th>
+                        <th>Vehículos</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cliente in clientes %}
+                    <tr>
+                        <td>
+                            <span class="badge bg-{% if cliente.tipo == 'PARTICULAR' %}primary{% else %}success{% endif %}">
+                                {{ cliente.get_tipo_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{% url 'clientes:detail' cliente.pk %}" class="text-decoration-none">
+                                {{ cliente.get_nombre_completo }}
+                            </a>
+                        </td>
+                        <td>{{ cliente.email }}</td>
+                        <td>{{ cliente.telefono }}</td>
+                        <td>{{ cliente.ciudad }}</td>
+                        <td>
+                            <span class="badge bg-secondary">{{ cliente.vehiculos.count }}</span>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'clientes:detail' cliente.pk %}" class="btn btn-outline-info">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% url 'vehiculos:create' %}?cliente={{ cliente.pk }}" class="btn btn-outline-success">
+                                    <i class="bi bi-plus-lg"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4">
+                            <i class="bi bi-inbox display-4 text-muted"></i>
+                            <p class="text-muted mt-2">No se encontraron clientes</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ action }} Orden - Taller Automotriz{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-clipboard-plus"></i> {{ action }} Orden de Trabajo</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Cliente y Vehículo -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Cliente</label>
+                            <select name="cliente" id="cliente" class="form-select" required onchange="loadVehiculos()">
+                                <option value="">Seleccione un cliente</option>
+                                {% for cliente in clientes %}
+                                <option value="{{ cliente.pk }}">{{ cliente.get_nombre_completo }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Vehículo</label>
+                            <select name="vehiculo" id="vehiculo" class="form-select" required onchange="updateKilometraje()">
+                                <option value="">Seleccione primero un cliente</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Información técnica -->
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Kilometraje al Ingreso</label>
+                            <input type="number" name="kilometraje_ingreso" id="kilometraje" class="form-control" min="0" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Prioridad</label>
+                            <select name="prioridad" class="form-select">
+                                <option value="BAJA">Baja</option>
+                                <option value="NORMAL" selected>Normal</option>
+                                <option value="ALTA">Alta</option>
+                                <option value="URGENTE">Urgente</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Fecha Estimada Entrega</label>
+                            <input type="date" name="fecha_estimada_entrega" class="form-control">
+                        </div>
+                    </div>
+
+                    <!-- Descripción de falla -->
+                    <div class="mb-3">
+                        <label class="form-label">Descripción de la Falla</label>
+                        <textarea name="descripcion_falla" class="form-control" rows="4" required 
+                                  placeholder="Describa detalladamente la falla reportada por el cliente"></textarea>
+                    </div>
+
+                    <!-- Observaciones -->
+                    <div class="mb-3">
+                        <label class="form-label">Observaciones</label>
+                        <textarea name="observaciones" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'ordenes:list' %}" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">{{ action }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let vehiculosData = [];
+
+function loadVehiculos() {
+    const clienteId = document.getElementById('cliente').value;
+    const vehiculoSelect = document.getElementById('vehiculo');
+    
+    if (clienteId) {
+        fetch(`{% url 'ordenes:load_vehiculos' %}?cliente_id=${clienteId}`)
+            .then(response => response.json())
+            .then(data => {
+                vehiculosData = data;
+                vehiculoSelect.innerHTML = '<option value="">Seleccione un vehículo</option>';
+                
+                data.forEach(vehiculo => {
+                    const option = document.createElement('option');
+                    option.value = vehiculo.id;
+                    option.textContent = `${vehiculo.marca} ${vehiculo.modelo} ${vehiculo.anio} - ${vehiculo.placa}`;
+                    option.dataset.kilometraje = vehiculo.kilometraje;
+                    vehiculoSelect.appendChild(option);
+                });
+                
+                vehiculoSelect.disabled = false;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                vehiculoSelect.innerHTML = '<option value="">Error al cargar vehículos</option>';
+            });
+    } else {
+        vehiculoSelect.innerHTML = '<option value="">Seleccione primero un cliente</option>';
+        vehiculoSelect.disabled = true;
+    }
+}
+
+function updateKilometraje() {
+    const vehiculoSelect = document.getElementById('vehiculo');
+    const kmInput = document.getElementById('kilometraje');
+    const selectedOption = vehiculoSelect.options[vehiculoSelect.selectedIndex];
+    
+    if (selectedOption && selectedOption.dataset.kilometraje) {
+        kmInput.value = selectedOption.dataset.kilometraje;
+    }
+}
+</script>
+{% endblock %}

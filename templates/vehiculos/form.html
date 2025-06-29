@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ action }} Vehículo - Taller Automotriz{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-car-front-fill"></i> {{ action }} Vehículo</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Cliente -->
+                    <div class="mb-3">
+                        <label class="form-label">Cliente</label>
+                        <select name="cliente" class="form-select" required>
+                            <option value="">Seleccione un cliente</option>
+                            {% for cliente in clientes %}
+                            <option value="{{ cliente.pk }}" {% if request.GET.cliente == cliente.pk|stringformat:"s" %}selected{% endif %}>
+                                {{ cliente.get_nombre_completo }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Información básica -->
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Tipo</label>
+                            <select name="tipo_vehiculo" class="form-select" required>
+                                <option value="AUTO">Automóvil</option>
+                                <option value="CAMIONETA">Camioneta</option>
+                                <option value="CAMION">Camión</option>
+                                <option value="MOTO">Motocicleta</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Marca</label>
+                            <input type="text" name="marca" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Modelo</label>
+                            <input type="text" name="modelo" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Año</label>
+                            <input type="number" name="anio" class="form-control" min="1990" max="2030" required>
+                        </div>
+                    </div>
+
+                    <!-- Identificación -->
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Placa</label>
+                            <input type="text" name="placa" class="form-control" required placeholder="ABC-123">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">VIN (opcional)</label>
+                            <input type="text" name="vin" class="form-control" maxlength="17">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Color</label>
+                            <input type="text" name="color" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <!-- Especificaciones -->
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Combustible</label>
+                            <select name="tipo_combustible" class="form-select" required>
+                                <option value="GASOLINA">Gasolina</option>
+                                <option value="DIESEL">Diésel</option>
+                                <option value="GAS">Gas</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Transmisión</label>
+                            <select name="tipo_transmision" class="form-select" required>
+                                <option value="MANUAL">Manual</option>
+                                <option value="AUTOMATICA">Automática</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Kilometraje</label>
+                            <input type="number" name="kilometraje" class="form-control" min="0" required>
+                        </div>
+                    </div>
+
+                    <!-- Observaciones -->
+                    <div class="mb-3">
+                        <label class="form-label">Observaciones</label>
+                        <textarea name="observaciones" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'vehiculos:list' %}" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">{{ action }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

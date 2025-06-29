@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ cliente.get_nombre_completo }} - Taller Automotriz{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-person"></i> {{ cliente.get_nombre_completo }}</h2>
+    <div>
+        <a href="{% url 'vehiculos:create' %}?cliente={{ cliente.pk }}" class="btn btn-success">
+            <i class="bi bi-plus-lg"></i> Agregar Vehículo
+        </a>
+        <a href="{% url 'clientes:list' %}" class="btn btn-secondary">Volver</a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Información del cliente -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-info-circle"></i> Información del Cliente</h6>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <td><strong>Tipo:</strong></td>
+                        <td><span class="badge bg-{% if cliente.tipo == 'PARTICULAR' %}primary{% else %}success{% endif %}">{{ cliente.get_tipo_display }}</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Email:</strong></td>
+                        <td>{{ cliente.email }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Teléfono:</strong></td>
+                        <td>{{ cliente.telefono }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ciudad:</strong></td>
+                        <td>{{ cliente.ciudad }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dirección:</strong></td>
+                        <td>{{ cliente.direccion }}</td>
+                    </tr>
+                    {% if cliente.observaciones %}
+                    <tr>
+                        <td><strong>Observaciones:</strong></td>
+                        <td>{{ cliente.observaciones }}</td>
+                    </tr>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vehículos -->
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between">
+                <h6><i class="bi bi-car-front"></i> Vehículos ({{ vehiculos.count }})</h6>
+                <a href="{% url 'vehiculos:create' %}?cliente={{ cliente.pk }}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-plus-lg"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                {% if vehiculos %}
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>Vehículo</th>
+                                <th>Placa</th>
+                                <th>Año</th>
+                                <th>Km</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vehiculo in vehiculos %}
+                            <tr>
+                                <td>{{ vehiculo.marca }} {{ vehiculo.modelo }}</td>
+                                <td><strong>{{ vehiculo.placa }}</strong></td>
+                                <td>{{ vehiculo.anio }}</td>
+                                <td>{{ vehiculo.kilometraje|floatformat:0 }} km</td>
+                                <td>
+                                    <a href="{% url 'vehiculos:detail' vehiculo.pk %}" class="btn btn-sm btn-outline-info">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'ordenes:create' %}?vehiculo={{ vehiculo.pk }}" class="btn btn-sm btn-outline-success">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-car-front display-4 text-muted"></i>
+                    <p class="text-muted">No hay vehículos registrados</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Órdenes recientes -->
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="bi bi-clipboard-check"></i> Órdenes Recientes</h6>
+            </div>
+            <div class="card-body">
+                {% if ordenes %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Orden</th>
+                                <th>Vehículo</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for orden in ordenes %}
+                            <tr>
+                                <td><a href="{% url 'ordenes:detail' orden.pk %}">{{ orden.numero_orden }}</a></td>
+                                <td>{{ orden.vehiculo.placa }}</td>
+                                <td><span class="badge bg-secondary">{{ orden.get_estado_display }}</span></td>
+                                <td>{{ orden.fecha_ingreso|date:"d/m/Y" }}</td>
+                                <td>${{ orden.costo_total|floatformat:2 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-clipboard-check display-4 text-muted"></i>
+                    <p class="text-muted">No hay órdenes registradas</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
