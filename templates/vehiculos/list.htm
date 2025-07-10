@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %}Vehículos - Taller Automotriz{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-car-front"></i> Gestión de Vehículos</h2>
+    <a href="{% url 'vehiculos:create' %}" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> Nuevo Vehículo
+    </a>
+</div>
+
+<!-- Búsqueda y filtros -->
+<div class="row mb-3">
+    <div class="col-md-6">
+        <form method="get" class="d-flex">
+            <input type="text" name="search" class="form-control" 
+                   placeholder="Buscar por marca, modelo, placa o cliente..." value="{{ search }}">
+            <button type="submit" class="btn btn-outline-secondary ms-2">
+                <i class="bi bi-search"></i>
+            </button>
+        </form>
+    </div>
+    <div class="col-md-3">
+        <small class="text-muted">{{ vehiculos.count }} vehículo(s) encontrado(s)</small>
+    </div>
+</div>
+
+<!-- Lista de vehículos -->
+<div class="card">
+    <div class="card-body">
+        {% if vehiculos %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Vehículo</th>
+                            <th>Placa</th>
+                            <th>Cliente</th>
+                            <th>Año</th>
+                            <th>Kilometraje</th>
+                            <th>Combustible</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vehiculo in vehiculos %}
+                        <tr>
+                            <td>
+                                <div>
+                                    <strong>{{ vehiculo.marca }} {{ vehiculo.modelo }}</strong>
+                                    <br>
+                                    <small class="text-muted">
+                                        <span class="badge bg-info">{{ vehiculo.get_tipo_vehiculo_display }}</span>
+                                        {{ vehiculo.color }}
+                                    </small>
+                                </div>
+                            </td>
+                            <td>
+                                <strong class="text-primary">{{ vehiculo.placa }}</strong>
+                                {% if vehiculo.vin %}
+                                    <br><small class="text-muted">VIN: {{ vehiculo.vin|truncatechars:10 }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'clientes:detail' vehiculo.cliente.pk %}" class="text-decoration-none">
+                                    {{ vehiculo.cliente.get_nombre_completo }}
+                                </a>
+                                {% if vehiculo.cliente.telefono %}
+                                    <br><small class="text-muted">
+                                        <i class="bi bi-telephone"></i> {{ vehiculo.cliente.telefono }}
+                                    </small>
+                                {% endif %}
+                            </td>
+                            <td>{{ vehiculo.anio }}</td>
+                            <td>
+                                {{ vehiculo.kilometraje|floatformat:0 }} km
+                                {% if vehiculo.kilometraje > 200000 %}
+                                    <br><small class="text-warning">Alto kilometraje</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{ vehiculo.get_tipo_combustible_display }}</span>
+                                <br>
+                                <small class="text-muted">{{ vehiculo.get_tipo_transmision_display }}</small>
+                            </td>
+                            <td>
+                                {% if vehiculo.espacio_asignado %}
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-geo-alt"></i> {{ vehiculo.espacio_asignado.codigo }}
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-warning">Sin espacio</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'vehiculos:detail' vehiculo.pk %}" 
+                                       class="btn btn-outline-info" title="Ver detalles">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'vehiculos:edit' vehiculo.pk %}" 
+                                       class="btn btn-outline-warning" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'vehiculos:delete' vehiculo.pk %}" 
+                                       class="btn btn-outline-danger" title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-4">
+                <i class="bi bi-car-front text-muted" style="font-size: 3rem;"></i>
+                <h5 class="text-muted mt-2">No hay vehículos registrados</h5>
+                {% if search %}
+                    <p class="text-muted">No se encontraron vehículos que coincidan con "{{ search }}"</p>
+                    <a href="{% url 'vehiculos:list' %}" class="btn btn-secondary">Ver todos</a>
+                {% else %}
+                    <p class="text-muted">Registra el primer vehículo</p>
+                    <a href="{% url 'vehiculos:create' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-lg"></i> Registrar Vehículo
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Estadísticas rápidas -->
+{% if vehiculos %}
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <h4>{{ vehiculos.count }}</h4>
+                <small>Total Vehículos</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h4>{{ stats.total_vehiculos }}</h4>
+                <small>Vehículos Activos</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body text-center">
+                <h4>{{ stats.anio_mas_antiguo|default:"-" }}</h4>
+                <small>Año Más Antiguo</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body text-center">
+                <h4>{{ stats.anio_mas_reciente|default:"-" }}</h4>
+                <small>Año Más Reciente</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

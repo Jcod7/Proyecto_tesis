@@ -1,12 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.db.models import Q
 from .models import OrdenTrabajo
 from apps.clientes.models import Cliente
 from apps.vehiculos.models import Vehiculo
 
-@login_required
 def orden_list(request):
     """Lista de órdenes - CU-R06"""
     ordenes = OrdenTrabajo.objects.filter(is_active=True).select_related('cliente', 'vehiculo')
@@ -31,22 +30,26 @@ def orden_list(request):
         'estado_filter': estado
     })
 
-@login_required
 def orden_create(request):
     """Crear orden - CU-R06"""
     clientes = Cliente.objects.filter(is_active=True)
     
     if request.method == 'POST':
         try:
+            # Validar que los campos requeridos estén presentes
+            kilometraje = request.POST.get('kilometraje_ingreso', '').strip()
+            if not kilometraje:
+                raise ValueError("El kilometraje de ingreso es requerido")
+            
             orden = OrdenTrabajo.objects.create(
                 cliente_id=request.POST['cliente'],
                 vehiculo_id=request.POST['vehiculo'],
-                kilometraje_ingreso=request.POST['kilometraje_ingreso'],
+                kilometraje_ingreso=int(kilometraje),
                 descripcion_falla=request.POST['descripcion_falla'],
                 fecha_estimada_entrega=request.POST.get('fecha_estimada_entrega') or None,
                 prioridad=request.POST.get('prioridad', 'NORMAL'),
                 observaciones=request.POST.get('observaciones', ''),
-                created_by=request.user
+                # created_by=request.user if request.user.is_authenticated else None
             )
             messages.success(request, f'Orden {orden.numero_orden} creada exitosamente')
             return redirect('ordenes:detail', pk=orden.pk)
@@ -58,7 +61,6 @@ def orden_create(request):
         'action': 'Crear'
     })
 
-@login_required
 def orden_detail(request, pk):
     """Detalle de orden"""
     orden = get_object_or_404(OrdenTrabajo, pk=pk, is_active=True)
@@ -69,7 +71,6 @@ def orden_detail(request, pk):
         'is_atrasado': orden.is_atrasado()
     })
 
-@login_required
 def load_vehiculos(request):
     """AJAX para cargar vehículos por cliente"""
     cliente_id = request.GET.get('cliente_id')
@@ -79,3 +80,51 @@ def load_vehiculos(request):
     ).values('id', 'marca', 'modelo', 'anio', 'placa', 'kilometraje')
     
     return JsonResponse(list(vehiculos), safe=False)
+
+def orden_edit(request, pk):
+    """Editar orden"""
+    orden = get_object_or_404(OrdenTrabajo, pk=pk, is_active=True)
+    clientes = Cliente.objects.filter(is_active=True)
+    
+    if request.method == 'POST':
+        try:
+            # Validar que los campos requeridos estén presentes
+            kilometraje = request.POST.get('kilometraje_ingreso', '').strip()
+            if not kilometraje:
+                raise ValueError("El kilometraje de ingreso es requerido")
+            
+            orden.cliente_id = request.POST['cliente']
+            orden.vehiculo_id = request.POST['vehiculo']
+            orden.kilometraje_ingreso = int(kilometraje)
+            orden.descripcion_falla = request.POST['descripcion_falla']
+            orden.fecha_estimada_entrega = request.POST.get('fecha_estimada_entrega') or None
+            orden.prioridad = request.POST.get('prioridad', 'NORMAL')
+            orden.observaciones = request.POST.get('observaciones', '')
+            orden.estado = request.POST.get('estado', orden.estado)
+            orden.save()
+            
+            messages.success(request, f'Orden {orden.numero_orden} actualizada exitosamente')
+            return redirect('ordenes:detail', pk=orden.pk)
+        except Exception as e:
+            messages.error(request, f'Error al actualizar orden: {e}')
+    
+    return render(request, 'ordenes/form.html', {
+        'orden': orden,
+        'clientes': clientes,
+        'action': 'Editar'
+    })
+
+def orden_delete(request, pk):
+    """Eliminar orden (soft delete)"""
+    orden = get_object_or_404(OrdenTrabajo, pk=pk, is_active=True)
+    
+    if request.method == 'POST':
+        orden.is_active = False
+        orden.save()
+        messages.success(request, f'Orden {orden.numero_orden} eliminada exitosamente')
+        return redirect('ordenes:list')
+    
+    return render(request, 'ordenes/detail.html', {
+        'orden': orden,
+        'confirm_delete': True
+    })

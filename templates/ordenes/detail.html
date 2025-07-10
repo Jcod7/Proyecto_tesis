@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ orden.numero_orden }} - Taller Automotriz{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-clipboard"></i> {{ orden.numero_orden }}</h2>
+    <a href="{% url 'ordenes:list' %}" class="btn btn-secondary">Volver</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5>Información de la Orden</h5>
+        <table class="table">
+            <tr>
+                <td><strong>Cliente:</strong></td>
+                <td>{{ orden.cliente.get_nombre_completo }}</td>
+            </tr>
+            <tr>
+                <td><strong>Vehículo:</strong></td>
+                <td>{{ orden.vehiculo }}</td>
+            </tr>
+            <tr>
+                <td><strong>Estado:</strong></td>
+                <td>{{ orden.get_estado_display }}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+{% endblock %}

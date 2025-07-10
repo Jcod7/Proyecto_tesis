@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+
+{% block title %}Órdenes - Taller Automotriz{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-clipboard-check"></i> Órdenes de Trabajo</h2>
+    <a href="{% url 'ordenes:create' %}" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> Nueva Orden
+    </a>
+</div>
+
+<!-- Filtros y búsqueda -->
+<div class="row mb-3">
+    <div class="col-md-4">
+        <form method="get" class="d-flex">
+            <input type="text" name="search" class="form-control" 
+                   placeholder="Buscar por orden, cliente o placa..." value="{{ search }}">
+            <button type="submit" class="btn btn-outline-secondary ms-2">
+                <i class="bi bi-search"></i>
+            </button>
+        </form>
+    </div>
+    <div class="col-md-3">
+        <form method="get">
+            {% if search %}<input type="hidden" name="search" value="{{ search }}">{% endif %}
+            <select name="estado" class="form-select" onchange="this.form.submit()">
+                <option value="">Todos los estados</option>
+                {% for value, label in estados %}
+                    <option value="{{ value }}" {% if estado_filter == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+    <div class="col-md-2">
+        <form method="get">
+            {% if search %}<input type="hidden" name="search" value="{{ search }}">{% endif %}
+            {% if estado_filter %}<input type="hidden" name="estado" value="{{ estado_filter }}">{% endif %}
+            <select name="prioridad" class="form-select" onchange="this.form.submit()">
+                <option value="">Todas las prioridades</option>
+                <option value="BAJA" {% if request.GET.prioridad == 'BAJA' %}selected{% endif %}>Baja</option>
+                <option value="NORMAL" {% if request.GET.prioridad == 'NORMAL' %}selected{% endif %}>Normal</option>
+                <option value="ALTA" {% if request.GET.prioridad == 'ALTA' %}selected{% endif %}>Alta</option>
+                <option value="URGENTE" {% if request.GET.prioridad == 'URGENTE' %}selected{% endif %}>Urgente</option>
+            </select>
+        </form>
+    </div>
+    <div class="col-md-3">
+        <div class="text-end">
+            <small class="text-muted">{{ ordenes.count }} orden(es) encontrada(s)</small>
+        </div>
+    </div>
+</div>
+
+<!-- Estadísticas rápidas -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <h4>{{ ordenes.count }}</h4>
+                <small>Total Órdenes</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body text-center">
+                <h4>0</h4>
+                <small>Pendientes</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body text-center">
+                <h4>0</h4>
+                <small>En Proceso</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h4>0</h4>
+                <small>Finalizadas</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista de órdenes -->
+<div class="card">
+    <div class="card-body">
+        {% if ordenes %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Orden</th>
+                            <th>Cliente / Vehículo</th>
+                            <th>Fechas</th>
+                            <th>Estado / Prioridad</th>
+                            <th>Mecánico</th>
+                            <th>Costo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for orden in ordenes %}
+                        <tr>
+                            <td>
+                                <strong class="text-primary">{{ orden.numero_orden }}</strong>
+                                <br>
+                                <small class="text-muted">
+                                    <i class="bi bi-speedometer2"></i> {{ orden.kilometraje_ingreso|floatformat:0 }} km
+                                </small>
+                            </td>
+                            <td>
+                                <div>
+                                    <a href="{% url 'clientes:detail' orden.cliente.pk %}" class="text-decoration-none">
+                                        <strong>{{ orden.cliente.get_nombre_completo }}</strong>
+                                    </a>
+                                </div>
+                                <div>
+                                    <a href="{% url 'vehiculos:detail' orden.vehiculo.pk %}" class="text-decoration-none">
+                                        <i class="bi bi-car-front"></i> 
+                                        {{ orden.vehiculo.marca }} {{ orden.vehiculo.modelo }}
+                                        <span class="badge bg-secondary">{{ orden.vehiculo.placa }}</span>
+                                    </a>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <strong>Ingreso:</strong> {{ orden.fecha_ingreso|date:"d/m/Y" }}
+                                </div>
+                                {% if orden.fecha_estimada_entrega %}
+                                <div>
+                                    <strong>Estimada:</strong> {{ orden.fecha_estimada_entrega|date:"d/m/Y" }}
+                                    {% if orden.is_atrasado %}
+                                        <span class="badge bg-danger">Atrasado</span>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                {% if orden.fecha_entrega_real %}
+                                <div>
+                                    <strong>Entregado:</strong> {{ orden.fecha_entrega_real|date:"d/m/Y" }}
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="mb-1">
+                                    {% if orden.estado == 'RECIBIDO' %}
+                                        <span class="badge bg-secondary">{{ orden.get_estado_display }}</span>
+                                    {% elif orden.estado == 'DIAGNOSTICO' %}
+                                        <span class="badge bg-info">{{ orden.get_estado_display }}</span>
+                                    {% elif orden.estado == 'PRESUPUESTO' %}
+                                        <span class="badge bg-warning">{{ orden.get_estado_display }}</span>
+                                    {% elif orden.estado == 'APROBADO' %}
+                                        <span class="badge bg-primary">{{ orden.get_estado_display }}</span>
+                                    {% elif orden.estado == 'EN_TRABAJO' %}
+                                        <span class="badge bg-info">{{ orden.get_estado_display }}</span>
+                                    {% elif orden.estado == 'FINALIZADO' %}
+                                        <span class="badge bg-success">{{ orden.get_estado_display }}</span>
+                                    {% elif orden.estado == 'ENTREGADO' %}
+                                        <span class="badge bg-success">{{ orden.get_estado_display }}</span>
+                                    {% elif orden.estado == 'CANCELADO' %}
+                                        <span class="badge bg-danger">{{ orden.get_estado_display }}</span>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    {% if orden.prioridad == 'URGENTE' %}
+                                        <span class="badge bg-danger">{{ orden.get_prioridad_display }}</span>
+                                    {% elif orden.prioridad == 'ALTA' %}
+                                        <span class="badge bg-warning">{{ orden.get_prioridad_display }}</span>
+                                    {% elif orden.prioridad == 'NORMAL' %}
+                                        <span class="badge bg-info">{{ orden.get_prioridad_display }}</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ orden.get_prioridad_display }}</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                {% if orden.mecanico_asignado %}
+                                    <div>
+                                        <i class="bi bi-person-check"></i>
+                                        {{ orden.mecanico_asignado.get_nombre_completo }}
+                                    </div>
+                                    <small class="text-muted">{{ orden.mecanico_asignado.get_role_display }}</small>
+                                {% else %}
+                                    <span class="text-muted">Sin asignar</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if orden.costo_total > 0 %}
+                                    <div>
+                                        <strong class="text-success">${{ orden.costo_total|floatformat:2 }}</strong>
+                                    </div>
+                                    <small class="text-muted">
+                                        M.O: ${{ orden.costo_mano_obra|floatformat:2 }}<br>
+                                        Rep: ${{ orden.costo_repuestos|floatformat:2 }}
+                                    </small>
+                                {% else %}
+                                    <span class="text-muted">Pendiente</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'ordenes:detail' orden.pk %}" 
+                                       class="btn btn-outline-info" title="Ver detalles">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'ordenes:edit' orden.pk %}" 
+                                       class="btn btn-outline-warning" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'ordenes:delete' orden.pk %}" 
+                                       class="btn btn-outline-danger" title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-4">
+                <i class="bi bi-clipboard-x text-muted" style="font-size: 3rem;"></i>
+                <h5 class="text-muted mt-2">No hay órdenes de trabajo</h5>
+                {% if search or estado_filter %}
+                    <p class="text-muted">No se encontraron órdenes que coincidan con los filtros</p>
+                    <a href="{% url 'ordenes:list' %}" class="btn btn-secondary">Ver todas</a>
+                {% else %}
+                    <p class="text-muted">Crea la primera orden de trabajo</p>
+                    <a href="{% url 'ordenes:create' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-lg"></i> Nueva Orden
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
