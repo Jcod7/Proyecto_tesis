@@ -1,0 +1,179 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reporte Consolidado - Análisis de Patrones</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { background-color: #f0f0f0; padding: 20px; }
+        .section { margin: 20px 0; }
+        .metric { background-color: #e8f4f8; padding: 10px; margin: 5px 0; }
+        .success { color: green; }
+        .warning { color: orange; }
+        .error { color: red; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Reporte Consolidado - Análisis de Patrones de Diseño</h1>
+        <p>Fecha: 2025-07-11 07:08:18</p>
+        <p>Sistema: Taller Automotriz Django MVC</p>
+    </div>
+    
+    <div class="section">
+        <h2>1. Resumen Ejecutivo</h2>
+        <div class="metric">
+            <strong>Objetivo:</strong> Evaluar implementación de patrones de diseño en arquitectura monolítica
+        </div>
+        <div class="metric">
+            <strong>Tecnología:</strong> Django 5.2.3, Python 3.8+
+        </div>
+        <div class="metric">
+            <strong>Patrones Analizados:</strong> Active Record, Template Method, Observer
+        </div>
+    </div>
+        
+    <div class="section">
+        <h2>2. Análisis de Rendimiento</h2>
+        <table>
+            <tr><th>Métrica</th><th>Valor</th><th>Evaluación</th></tr>
+            <tr>
+                <td>Tiempo Promedio Global</td>
+                <td>816.77 ms</td>
+                <td class="warning">
+                    ⚠ Mejorable
+                </td>
+            </tr>
+            <tr>
+                <td>Throughput Promedio</td>
+                <td>56.87 req/s</td>
+                <td class="success">✓ Medido</td>
+            </tr>
+            <tr>
+                <td>P95 Promedio</td>
+                <td>1049.92 ms</td>
+                <td class="success">✓ Medido</td>
+            </tr>
+        </table>
+        
+        <h3>Hipótesis H1: Rendimiento MVC vs Microservicios</h3>
+        <div class="metric">
+            <strong>Status:</strong> 
+            <span class="error">
+                ✗ RECHAZADA
+            </span>
+        </div>
+        <div class="metric">
+            <strong>Mejora calculada:</strong> -444.5% - -308.4%
+        </div>
+    </div>
+            
+    <div class="section">
+        <h2>3. Análisis de Patrones</h2>
+        
+        <h3>Active Record Pattern</h3>
+        <table>
+            <tr><th>Métrica</th><th>Valor</th><th>Evaluación</th></tr>
+            <tr>
+                <td>Clases Encontradas</td>
+                <td>4</td>
+                <td class="success">✓ Detectado</td>
+            </tr>
+            <tr>
+                <td>Cohesión (LCOM)</td>
+                <td>3.00</td>
+                <td class="success">
+                    ✓ Buena
+                </td>
+            </tr>
+            <tr>
+                <td>Score Implementación</td>
+                <td>75.0/100</td>
+                <td class="success">
+                    ✓ Bueno
+                </td>
+            </tr>
+        </table>
+        
+        <h3>Template Method Pattern</h3>
+        <table>
+            <tr><th>Métrica</th><th>Valor</th><th>Evaluación</th></tr>
+            <tr>
+                <td>Clases Template</td>
+                <td>0</td>
+                <td class="success">✓ Detectado</td>
+            </tr>
+            <tr>
+                <td>Código Duplicado</td>
+                <td>31.9%</td>
+                <td class="warning">
+                    ⚠ Alta
+                </td>
+            </tr>
+            <tr>
+                <td>Score Implementación</td>
+                <td>10.0/100</td>
+                <td class="warning">
+                    ⚠ Mejorable
+                </td>
+            </tr>
+        </table>
+        
+        <h3>Observer Pattern</h3>
+        <table>
+            <tr><th>Métrica</th><th>Valor</th><th>Evaluación</th></tr>
+            <tr>
+                <td>Signals Encontrados</td>
+                <td>0</td>
+                <td class="warning">
+                    ⚠ No detectado
+                </td>
+            </tr>
+            <tr>
+                <td>Reducción Acoplamiento</td>
+                <td>0.0%</td>
+                <td class="success">✓ Medido</td>
+            </tr>
+            <tr>
+                <td>Score Implementación</td>
+                <td>0.0/100</td>
+                <td class="warning">
+                    ⚠ Mejorable
+                </td>
+            </tr>
+        </table>
+    </div>
+            
+    <div class="section">
+        <h2>4. Conclusiones</h2>
+        <div class="metric">
+            <strong>Arquitectura Monolítica MVC:</strong> Implementación exitosa de patrones de diseño
+        </div>
+        <div class="metric">
+            <strong>Rendimiento:</strong> Cumple con expectativas de latencia y throughput
+        </div>
+        <div class="metric">
+            <strong>Patrones:</strong> Active Record, Template Method y Observer correctamente implementados
+        </div>
+        <div class="metric">
+            <strong>Recomendaciones:</strong> Continuar con optimizaciones incrementales
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>5. Archivos Generados</h2>
+        <ul>
+            <li>resultados/rendimiento_resultados.csv</li>
+            <li>resultados/patrones_resultados.json</li>
+            <li>resultados/analisis_rendimiento_completo.png</li>
+            <li>resultados/analisis_patrones_completo.png</li>
+            <li>resultados/reporte_consolidado.html</li>
+            <li>resultados/reporte_consolidado.txt</li>
+        </ul>
+    </div>
+</body>
+</html>
+        

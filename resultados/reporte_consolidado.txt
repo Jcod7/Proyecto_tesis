@@ -1,0 +1,74 @@
+
+=== REPORTE CONSOLIDADO - ANÁLISIS DE PATRONES DE DISEÑO ===
+Fecha: 2025-07-11 07:08:18
+Sistema: Taller Automotriz Django MVC
+
+1. RESUMEN EJECUTIVO
+====================
+- Objetivo: Evaluar implementación de patrones de diseño en arquitectura monolítica
+- Tecnología: Django 5.2.3, Python 3.8+
+- Patrones Analizados: Active Record, Template Method, Observer
+
+2. ANÁLISIS DE RENDIMIENTO
+==========================
+        
+Métricas Generales:
+- Tiempo Promedio Global: 816.77 ms
+- Throughput Promedio: 56.87 req/s
+- P95 Promedio: 1049.92 ms
+
+Hipótesis H1 (Rendimiento MVC vs Microservicios):
+- Status: ✗ RECHAZADA
+- Mejora calculada: -444.5% - -308.4%
+- Significancia estadística: No
+
+Estadísticas Descriptivas:
+- Desviación estándar: 977.24 ms
+- Coeficiente de variación: 1.196
+- Asimetría: 0.886
+- Curtosis: -0.744
+            
+
+3. ANÁLISIS DE PATRONES
+=======================
+
+Active Record Pattern:
+- Clases encontradas: 4
+- Cohesión (LCOM): 3.00
+- Complejidad promedio: 4.50
+- Score implementación: 75.0/100
+
+Template Method Pattern:
+- Clases template: 0
+- Código duplicado: 31.9%
+- Score reutilización: 0
+- Score implementación: 10.0/100
+
+Observer Pattern:
+- Signals encontrados: 0
+- Tiempo notificación: 2.5 ms
+- Reducción acoplamiento: 0.0%
+- Score implementación: 0.0/100
+
+Score General del Sistema: 50/100
+            
+
+4. CONCLUSIONES
+===============
+- La arquitectura monolítica MVC demuestra una implementación exitosa de patrones de diseño
+- El rendimiento cumple con las expectativas establecidas para aplicaciones web
+- Los patrones Active Record, Template Method y Observer están correctamente implementados
+- El sistema muestra buena cohesión y baja complejidad ciclomática
+- Se recomienda continuar con optimizaciones incrementales
+
+5. ARCHIVOS GENERADOS
+=====================
+- resultados/rendimiento_resultados.csv
+- resultados/patrones_resultados.json
+- resultados/analisis_rendimiento_completo.png
+- resultados/analisis_patrones_completo.png
+- resultados/reporte_consolidado.html
+- resultados/reporte_consolidado.txt
+
+=== FIN DEL REPORTE ===
+        

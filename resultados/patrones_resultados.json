@@ -1,0 +1,54 @@
+{
+  "fecha_analisis": "2025-07-11T07:07:55.388363",
+  "proyecto_path": "patron_mvc",
+  "active_record": {
+    "archivos_analizados": 4,
+    "clases_active_record": [
+      "OrdenTrabajo",
+      "EspacioTaller",
+      "Vehiculo",
+      "Cliente"
+    ],
+    "metricas_cohesion": [
+      6,
+      0,
+      3,
+      3
+    ],
+    "metricas_complejidad": [
+      6,
+      1,
+      4,
+      7
+    ],
+    "responsabilidades": [
+      27,
+      7,
+      23,
+      19
+    ],
+    "cohesion_promedio": 3.0,
+    "complejidad_promedio": 4.5,
+    "total_responsabilidades": 76
+  },
+  "template_method": {
+    "archivos_analizados": 4,
+    "clases_template": [],
+    "codigo_duplicado": 31.856540084388186,
+    "metricas_reutilizacion": [],
+    "extensibilidad_score": 0,
+    "score_reutilizacion": 0
+  },
+  "observer": {
+    "signals_encontrados": 0,
+    "tiempo_notificacion": 2.5,
+    "acoplamiento_reducido": 0,
+    "escalabilidad_score": 0,
+    "tolerancia_fallos": 85
+  },
+  "resumen": {
+    "total_archivos": 8,
+    "patrones_detectados": 3,
+    "score_general": 50
+  }
+}

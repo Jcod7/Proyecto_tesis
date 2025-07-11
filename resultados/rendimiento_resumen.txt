@@ -1,0 +1,21 @@
+=== RESUMEN DE ANÁLISIS DE RENDIMIENTO ===
+
+Fecha: 2025-07-11 07:07:44
+
+Métricas Generales:
+- Tiempo promedio global: 816.77ms
+- Throughput promedio: 56.87 req/s
+- P95 promedio: 1049.92ms
+
+Análisis por Endpoint:
+- localhost:8002: 72.14ms, 129.18 req/s
+- clientes: 1152.70ms, 8.46 req/s
+- vehiculos: 401.32ms, 24.23 req/s
+- ordenes: 2377.86ms, 4.18 req/s
+- accounts: 79.84ms, 118.30 req/s
+
+=== EVALUACIÓN HIPÓTESIS H1 ===
+Hipótesis: MVC monolítico tiene 25-45% mejor rendimiento que microservicios
+Baseline esperado para microservicios: 150-200ms promedio
+Tiempo actual MVC: 816.77ms
+✗ HIPÓTESIS NO CONFIRMADA: Rendimiento similar o inferior
